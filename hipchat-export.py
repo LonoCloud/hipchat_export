@@ -176,7 +176,7 @@ def message_export(user_token, user_id, user_name):
 
     # Set initial URL with correct user_id
     global HIPCHAT_API_URL
-    url = HIPCHAT_API_URL + "/user/%s/history?date=%s&reverse=false&max-results=1000" % (user_id, int(time()))
+    url = HIPCHAT_API_URL + "/user/%s/history?date=%s&reverse=false" % (user_id, int(time()))
 
     # main loop to fetch and save messages
     while MORE_RECORDS:
