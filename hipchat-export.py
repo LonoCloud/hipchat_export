@@ -88,20 +88,34 @@ def vlog(msg):
     if VERBOSE:
         log(msg)
 
-
-def take5():
-    global TOTAL_REQUESTS
-    log("\nHipChat API rate limit exceeded! Script will pause for 5 minutes then resume.")
-    log("   Please do not kill the script during this pause -- I was too lazy to make")
-    log("   it any smarter, so you'll have to start all over from the beginning... ;-)")
+def sleeper(delay):
     log(' ')
-    for i in range(310, -1, -1):
+    for i in range(delay, -1, -1):
         sleep(1)
         sys.stdout.write("\r%d sec remaining to resume..." % i)
         sys.stdout.flush()
     print('')
     log("Script operation resuming...")
+
+def take1():
+    global TOTAL_REQUESTS
+    global FETCH_START
+    log("\nHipChat API rate limit reached. Script will pause for 1 minute")
+    sleeper(60)
     TOTAL_REQUESTS = 0
+    FETCH_START = time()
+
+def take5():
+    global TOTAL_REQUESTS
+    global FETCH_START
+    delay = ((5 * 60) - int(time() - FETCH_START)) + 10 # extra seconds
+    log("\nScript will pause for the rest of the current 5 minute window")
+    log("   (%d seconds remaining) and then resume." % delay)
+    log("   Please do not kill the script during this pause -- I was too lazy to make")
+    log("   it any smarter, so you'll have to start all over from the beginning... ;-)")
+    sleeper(delay)
+    TOTAL_REQUESTS = 0
+    FETCH_START = time()
 
 
 def check_requests_vs_limit():
@@ -173,12 +187,15 @@ def message_export(user_token, user_id, user_name):
 
     # track the total number of requests made, so we can avoid the rate limit
     global TOTAL_REQUESTS
+    # track time when we started this round of requests
+    global FETCH_START
 
     # Set initial URL with correct user_id
     global HIPCHAT_API_URL
     url = HIPCHAT_API_URL + "/user/%s/history?date=%s&reverse=false" % (user_id, int(time()))
 
     # main loop to fetch and save messages
+    FETCH_START = time()
     while MORE_RECORDS:
         # Check the REQ count...
         check_requests_vs_limit()
@@ -194,8 +211,8 @@ def message_export(user_token, user_id, user_name):
         # TODO - check response code for other errors and report out
         if not r.status_code == requests.codes.ok:
             if r.status_code == 429:
-                # Hit the rate limit! trigger the 5m pause...
-                take5()
+                # Hit the rate limit! trigger the 1m pause...
+                take1()
             elif 'error' in r.json():
                 raise ApiError(r.json().get('error'))
             else:
