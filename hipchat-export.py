@@ -269,7 +269,10 @@ def message_export(user_token, user_id, user_name):
         if 'next' in r.json()['links']:
             url = r.json()['links']['next']
             LEVEL += 1
+            sys.stdout.write("\rFetching range %d" % LEVEL)
+            sys.stdout.flush()
         else:
+            print('')
             MORE_RECORDS = False
 
             # end loop
