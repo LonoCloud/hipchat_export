@@ -203,7 +203,7 @@ def message_export(user_token, user_id, user_name):
 
         # check JSON for objects and react
         if 'items' not in r.json():
-            raise Usage("Could not find messages in API return data... Check your token and try again.")
+            raise Usage("Could not find messages in API return data: %s" % (r.json()))
 
         # write the current JSON dump to file
         file_name = os.path.join(EXPORT_DIR, user_name, str(LEVEL) + '.txt')
