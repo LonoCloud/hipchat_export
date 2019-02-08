@@ -209,12 +209,16 @@ def message_export(user_token, user_id, user_name):
         check_requests_vs_limit()
 
         # TODO - check response code for other errors and report out
-        if not r.status_code == requests.codes.ok:
+        if (not r.status_code == requests.codes.ok) or ('error' in r.json()):
             if r.status_code == 429:
                 # Hit the rate limit! trigger the 1m pause...
                 take1()
             elif 'error' in r.json():
-                raise ApiError(r.json().get('error'))
+                if r.json()['error']['code'] == 429:
+                    # Hit the rate limit! trigger the 1m pause...
+                    take1()
+                else:
+                    raise ApiError(r.json().get('error'))
             else:
                 r.raise_for_status()
 
