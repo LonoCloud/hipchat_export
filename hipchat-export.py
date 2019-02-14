@@ -213,10 +213,12 @@ def message_export(user_token, user_id, user_name):
             if r.status_code == 429:
                 # Hit the rate limit! trigger the 1m pause...
                 take1()
+                continue
             elif 'error' in r.json():
                 if r.json()['error']['code'] == 429:
                     # Hit the rate limit! trigger the 1m pause...
                     take1()
+                    continue
                 else:
                     raise ApiError(r.json().get('error'))
             else:
