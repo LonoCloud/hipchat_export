@@ -1,5 +1,12 @@
 ## HipChat Export Instructions for LonoCloud
 
+### Checkout this project
+
+```
+git clone git@github.com:LonoCloud/hipchat_export.git
+cd hipchat_export
+```
+
 ### Create an API token
 
 * Go to https://coa.hipchat.com/account/api
@@ -12,13 +19,6 @@
   Create.
 * Copy/save the personal token string shown at the top of the page.
   You will need this to use the export script.
-
-### Checkout this project
-
-```
-git clone git@github.com:LonoCloud/hipchat_export.git
-cd hipchat_export
-```
 
 ### List the personal chats
 
@@ -80,7 +80,8 @@ Use that variable to download just the text messages for all chats:
 ```
 
 Downloading all my (Joel Martin) 1x1 chats messages (without media
-files) took XYZ seconds. The reason for this is that the API itself is
-not particularly fast and the export API is throttled and so the
-script has to pause periodically.
+files) took 24 minutes to download 43,000 individual messages. The
+reason for this is that the API itself is not particularly fast and
+the export API has a limit to the number of requests that can be made
+every 5 minutes and so the script has to pause periodically.
 
